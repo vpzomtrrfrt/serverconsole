@@ -1,1 +1,4 @@
 serverconsole-host
+.codelite
+*.project
+*.workspace

@@ -8,6 +8,8 @@
 #include <thread>
 #include <vector>
 #include <string>
+#include <csignal>
+#include <algorithm>
 
 #define MAXPENDING 5    /* Maximum outstanding connection requests */
 
@@ -19,16 +21,24 @@ void DieWithError(char *errorMessage) {  /* Error handling function */
 std::vector<int> clntSocks; // Client sockets
 
 void dataThread() {
+    signal(SIGPIPE,SIG_IGN);
     std::string input_line;
     while(std::cin) {
         getline(std::cin, input_line);
         input_line += "\n";
-        std::cout << input_line;
+        //std::cout << input_line;
         for(int i : clntSocks) {
-            send(i, input_line.c_str(), input_line.length(), 0);
+            std::cout << "hoi" << std::endl;
+            int len = input_line.length();
+            int res = send(i, input_line.c_str(), len, 0);
+            if(res != len) {
+                std::cout << len << " != " << res << std::endl;
+                clntSocks.erase(std::remove(clntSocks.begin(), clntSocks.end(), i), clntSocks.end());
+            }
         }
     }
-    exit(0);
+    std::cout << "EOF" << std::endl;
+    //exit(0);
 }
 
 int main(int argc, char *argv[])
