@@ -28,6 +28,7 @@ void dataThread() {
             send(i, input_line.c_str(), input_line.length(), 0);
         }
     }
+    exit(0);
 }
 
 int main(int argc, char *argv[])
@@ -50,6 +51,9 @@ int main(int argc, char *argv[])
     /* Create socket for incoming connections */
     if ((servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
         DieWithError("socket() failed");
+
+    int iSetOption = 1;
+    setsockopt(servSock, SOL_SOCKET, SO_REUSEADDR, (char*)&iSetOption, sizeof(iSetOption));
       
     /* Construct local address structure */
     memset(&echoServAddr, 0, sizeof(echoServAddr));   /* Zero out structure */
